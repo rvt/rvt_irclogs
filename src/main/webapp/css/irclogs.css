@@ -1,0 +1,65 @@
+.bodywrapper .irclogs .yearsMenu .selected,
+.bodywrapper .irclogs .monthMenu .selected,
+.bodywrapper .irclogs .daysMenu .selected
+{
+    font-weight: bold;
+}
+
+.bodywrapper .irclogs .yearsMenu ul,
+.bodywrapper .irclogs .monthMenu ul,
+.bodywrapper .irclogs .daysMenu ul
+{
+    display: inline;
+}
+
+.irclogs .chatlog {
+    width: 100%;
+    padding-top: 20px;
+    line-height: 1em;
+}
+
+.irclogs h1 {
+    font-size: 1.5em;
+    margin: .8em 0 0 .4em;
+    border: 0
+}
+
+.irclogs td {
+    vertical-align: top;
+}
+
+.irclogs .time {
+    color: #202020;
+    font-size: 11px;
+    padding: 0 10px 0 0;
+    margin: 0;
+}
+
+.irclogs .name {
+    color: #202020;
+    font-size: 11px;
+    padding: 0 10px 0 0;
+    text-align: right;
+    width:auto;
+    margin: 0;
+}
+
+.irclogs .text {
+    color: #202020;
+    font-size: 11px;
+    padding: 0 5px 0 0;
+    width:100%;
+    margin: 0;
+}
+
+.irclogs table {
+    margin-top: 10px;
+}
+
+.irclogs td,
+.irclogs th,
+.irclogs tr {
+    border-bottom: none;
+    margin: 0;
+    padding: 0;
+}

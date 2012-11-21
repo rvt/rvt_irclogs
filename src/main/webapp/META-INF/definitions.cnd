@@ -1,0 +1,9 @@
+<jnt = 'http://www.jahia.org/jahia/nt/1.0'>
+<jmix = 'http://www.jahia.org/jahia/mix/1.0'>
+
+[jmix:ircLogs] > jmix:droppableContent mixin
+
+[jnt:displayIRCLogs] > jnt:content, jmix:ircLogs, jmix:list
+- channel (String) mandatory
+// - directory (String) mandatory
+
