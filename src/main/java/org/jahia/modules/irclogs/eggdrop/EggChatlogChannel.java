@@ -120,7 +120,7 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
                 timeOfLine.set(Calendar.YEAR, year);
                 timeOfLine.set(Calendar.MONTH, month);
                 timeOfLine.set(Calendar.DAY_OF_MONTH, day);
-                timeOfLine.set(Calendar.HOUR, Integer.parseInt(timeParsed[0]));
+                timeOfLine.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeParsed[0]));
                 timeOfLine.set(Calendar.MINUTE, Integer.parseInt(timeParsed[1]));
 
                 IRClogLine entry;
