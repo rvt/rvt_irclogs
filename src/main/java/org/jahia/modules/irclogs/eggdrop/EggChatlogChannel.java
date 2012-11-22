@@ -211,8 +211,10 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
         line = userPattern.matcher(line).replaceAll("Users/<removed>/...");
         line = homePattern.matcher(line).replaceAll("Home/<removed>/...");
         line = emailPattern.matcher(line).replaceAll("(obscured mail address)");
-        line = urlPattern.matcher(line).replaceAll("$1<a target=\"_blank\" href=\"$2\">$2</a>$4");
 
+        line = StringUtils.replaceEach(line, new String[]{"&", "\"", "<", ">", "#"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;", "&#35;"});
+
+        line = urlPattern.matcher(line).replaceAll("$1<a target=\"_blank\" href=\"$2\">$2</a>$4");
         return line;
     }
 
