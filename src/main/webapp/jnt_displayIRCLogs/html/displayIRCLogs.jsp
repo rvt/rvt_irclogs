@@ -7,6 +7,7 @@
 <%@ page import="org.jahia.registries.ServicesRegistry" %>
 <%@ page import="org.jahia.services.cache.CacheHelper" %>
 <%@ page import="org.jahia.modules.irclogs.interfaces.ChatlogChannel" %>
+<%@ page import="org.apache.commons.lang.WordUtils" %>
 <%@ taglib prefix="jcr" uri="http://www.jahia.org/tags/jcr" %>
 <%@ taglib prefix="irc" uri="http://www.jahia.org/tags/irclogs" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -69,7 +70,7 @@
     ChatlogChannel chatlogChannel = clc.getChannel(channel);
     if (chatlogChannel!=null) {
         selectedYear = Integer.valueOf(request.getParameter("ircyear")==null?"0":request.getParameter("ircyear"));
-        selectedMonth = fmonthLocale.indexOf((String) (request.getParameter("ircmonth")==null?"":request.getParameter("ircmonth")));
+        selectedMonth = fmonthLocale.indexOf((String) (request.getParameter("ircmonth")==null?"": WordUtils.capitalize(request.getParameter("ircmonth"))));
         selectedDay = Integer.valueOf(request.getParameter("ircday")==null?"0":request.getParameter("ircday"));
 
 
