@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of the rvt_irclogs project, a Jahia module to display IRC logs
+  ~
+  ~ Copyright (C) 2010 R. van Twisk (rvt@dds.nl)
+  ~
+  ~ This file may be distributed and/or modified under the terms of the
+  ~ GNU General Public License version 2 as published by the Free Software
+  ~ Foundation and appearing in the file gpl-2.0.txt included in the
+  ~ packaging of this file.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+  ~
+  ~ This copyright notice MUST APPEAR in all copies of the script!
+  -->
+
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.2//EN"
+        "http://tuckey.org/res/dtds/urlrewrite3.2.dtd">
+<urlrewrite>
+
+    <!--  Rewrite Year+Month+day name -->
+    <rule>
+        <from>^/cms/(.*)/(\d\d\d\d)/(\w+)/(\d\d?).html$</from>
+        <to>/cms/$1.html?ircyear=$2&amp;ircmonth=$3&amp;ircday=$4</to>
+    </rule>
+    <outbound-rule>
+        <from>.html\?ircyear=(\d\d\d\d)&amp;ircmonth=(\w+)&amp;ircday=(\d\d?)$</from>
+        <to last="true">%{context-path}/$1/$2/$3.html</to>
+    </outbound-rule>
+
+    <!--  Rewrite Year+Month name -->
+    <rule>
+        <from>^/cms/(.*)/(\d\d\d\d)/(\w+).html$</from>
+        <to>/cms/$1.html?ircyear=$2&amp;ircmonth=$3</to>
+    </rule>
+    <outbound-rule>
+        <from>.html\?ircyear=(\d\d\d\d)&amp;ircmonth=(\w+)$</from>
+        <to last="true">%{context-path}/$1/$2.html</to>
+    </outbound-rule>
+
+    <!--  Rewrite Year name -->
+    <rule>
+        <from>^/cms/(.*)/(\d\d\d\d).html$</from>
+        <to>/cms/$1.html?ircyear=$2</to>
+    </rule>
+    <outbound-rule>
+        <from>.html\?ircyear=(\d\d\d\d)$</from>
+        <to last="true">%{context-path}/$1.html</to>
+    </outbound-rule>
+
+</urlrewrite>
