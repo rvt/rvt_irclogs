@@ -56,7 +56,7 @@
     }
     JCRNodeWrapper currentMNode = (JCRNodeWrapper) request.getAttribute("currentNode");
     String channel = currentMNode.getProperty("channel").getString();
-    ChatLogCache clc = ChatLogCache.instance();
+    ChatLogCache clc = ChatLogCache.getInstance();
 
     Integer selectedYear=null;
     Integer selectedMonth=null;
@@ -70,15 +70,12 @@
     ChatlogChannel chatlogChannel = clc.getChannel(channel);
     if (chatlogChannel!=null) {
         selectedYear = Integer.valueOf(request.getParameter("ircyear")==null?"0":request.getParameter("ircyear"));
-        selectedMonth = fmonthLocale.indexOf((String) (request.getParameter("ircmonth")==null?"": WordUtils.capitalize(request.getParameter("ircmonth"))));
+        selectedMonth = fmonthLocale.indexOf(request.getParameter("ircmonth")==null?"": WordUtils.capitalize(request.getParameter("ircmonth")));
         selectedDay = Integer.valueOf(request.getParameter("ircday")==null?"0":request.getParameter("ircday"));
 
-
-        if (chatlogChannel!=null) {
-            years = chatlogChannel.getYears();
-            months=chatlogChannel.getMonth(selectedYear);
-            days=chatlogChannel.getDays(selectedYear, selectedMonth);
-        }
+        years = chatlogChannel.getYears();
+        months=chatlogChannel.getMonth(selectedYear);
+        days=chatlogChannel.getDays(selectedYear, selectedMonth);
 
         if (selectedYear>0 && selectedMonth>-1 && selectedDay>0) {
             lines=chatlogChannel.getLines(selectedYear, selectedMonth, selectedDay);

@@ -37,7 +37,7 @@ import org.springframework.beans.factory.InitializingBean;
  * To change this template use File | Settings | File Templates.
  */
 public class ParseAtStartup implements InitializingBean {
-    private static Logger logger = Logger.getLogger(ParseAtStartup.class);
+    private static final Logger logger = Logger.getLogger(ParseAtStartup.class);
 
     private SchedulerService schedulerService;
 

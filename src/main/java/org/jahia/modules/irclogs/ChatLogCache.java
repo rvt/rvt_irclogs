@@ -35,8 +35,8 @@ import java.util.List;
  * Time: 3:39 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ChatLogCache {
-    private static Logger logger = Logger.getLogger(IRCJobRunner.class);
+public final class ChatLogCache {
+    private static final Logger logger = Logger.getLogger(IRCJobRunner.class);
     private List<ChatlogChannel> channels = new ArrayList<ChatlogChannel>();
     private static ChatLogCache _instance;
 
@@ -44,7 +44,7 @@ public class ChatLogCache {
         ChatLogCache._instance = this;
     }
 
-    static public ChatLogCache instance() {
+    static public ChatLogCache getInstance() {
         return ChatLogCache._instance;
     }
 
@@ -59,9 +59,9 @@ public class ChatLogCache {
     }
 
     /**
-     * Retreive a list of all registered channels
+     * Retrieve a list of all registered channels
      *
-     * @return
+     * @return list of IRC channels
      */
     public List<ChatlogChannel> getChannels()
     {
@@ -71,7 +71,7 @@ public class ChatLogCache {
     /**
      * Set a list of channels, usually done with a bean
      *
-     * @param channels
+     * @param channels Adds a new channel
      */
     public void setChannels(List<ChatlogChannel> channels)
     {

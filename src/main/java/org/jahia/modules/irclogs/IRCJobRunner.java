@@ -46,17 +46,16 @@ import javax.jcr.query.Query;
  * To change this template use File | Settings | File Templates.
  */
 public class IRCJobRunner extends BackgroundJob {
-    private static Logger logger = Logger.getLogger(IRCJobRunner.class);
+    private static final Logger logger = Logger.getLogger(IRCJobRunner.class);
 
 
     @Override
     public void executeJahiaJob(JobExecutionContext jobExecutionContext) throws Exception {
-        long timer = System.currentTimeMillis();
         final JobDataMap data = jobExecutionContext.getJobDetail().getJobDataMap();
         final String workspace = StringUtils.defaultIfEmpty(data.getString("workspace"),
                 Constants.LIVE_WORKSPACE);
 
-        Integer[] counts = JCRTemplate.getInstance().doExecuteWithSystemSession(null, workspace,
+        JCRTemplate.getInstance().doExecuteWithSystemSession(null, workspace,
                 new JCRCallback<Integer[]>() {
                     @SuppressWarnings("unchecked")
                     public Integer[] doInJCR(JCRSessionWrapper session) throws RepositoryException {
@@ -69,7 +68,7 @@ public class IRCJobRunner extends BackgroundJob {
                             String channel = next.getProperty("channel").getString();
                             // String directory = next.getProperty("directory").getString();
 
-                            ChatlogChannel clc=ChatLogCache.instance().getChannel(channel);
+                            ChatlogChannel clc=ChatLogCache.getInstance().getChannel(channel);
                             if (clc!=null) {
                                 clc.runJob();
                             } else {

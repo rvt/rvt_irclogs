@@ -45,13 +45,13 @@
 
 
     <!-- LibreCAD Channel -->
-    <bean id="LibreCADChannel" class="org.jahia.modules.irclogs.eggdrop.EggChatlogChannel">
+    <bean id="libreCADChannel" class="org.jahia.modules.irclogs.eggdrop.EggChatlogChannel">
         <property name="channel" value="librecad" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <!-- TYPO3 Channel -->
-    <bean id="TYPO3Channel" class="org.jahia.modules.irclogs.eggdrop.EggChatlogChannel">
+    <bean id="tYPO3Channel" class="org.jahia.modules.irclogs.eggdrop.EggChatlogChannel">
         <property name="channel" value="typo3" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
@@ -60,8 +60,8 @@
     <bean id="chatLogCache" class="org.jahia.modules.irclogs.ChatLogCache">
         <property name="channels">
             <list>
-                <ref bean="LibreCADChannel" />
-                <ref bean="TYPO3Channel" />
+                <ref bean="libreCADChannel" />
+                <ref bean="tYPO3Channel" />
             </list>
         </property>
     </bean>

@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
-    private static Logger logger = Logger.getLogger(ChatlogChannel.class);
+    private static final Logger logger = Logger.getLogger(ChatlogChannel.class);
     private String channel;
     private String directory;
     private FilenameDateParser dateParser=null;
@@ -109,14 +109,14 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
         String[] lines = getLogData(year, month, day).split("\n");
         List<IRClogLine> parsedLines = new ArrayList<IRClogLine>();
 
-        for (int lNum=0; lNum<lines.length; lNum++) {
-            Matcher matcher = linePattern.matcher(lines[lNum]);
+        for (String line : lines) {
+            Matcher matcher = linePattern.matcher(line);
 
             if (matcher.find()) {
 
                 // get a time object
                 String[] timeParsed = matcher.group(1).split(":");
-                Calendar timeOfLine = (Calendar) Calendar.getInstance();
+                Calendar timeOfLine = Calendar.getInstance();
                 timeOfLine.set(Calendar.YEAR, year);
                 timeOfLine.set(Calendar.MONTH, month);
                 timeOfLine.set(Calendar.DAY_OF_MONTH, day);
