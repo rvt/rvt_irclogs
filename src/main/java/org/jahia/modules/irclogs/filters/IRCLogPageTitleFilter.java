@@ -29,6 +29,7 @@ import org.jahia.services.render.filter.RenderChain;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -47,9 +48,9 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
     @Override
     public String execute(String previousOut, RenderContext renderContext, Resource resource, RenderChain chain) throws Exception {
 
-        final String selectedYear = renderContext.getRequest().getParameter("year");
-        final String selectedMonth = renderContext.getRequest().getParameter("month");
-        final String selectedDay = renderContext.getRequest().getParameter("day");
+        final String selectedYear = renderContext.getRequest().getParameter("ircyear");
+        final String selectedMonth = renderContext.getRequest().getParameter("ircmonth");
+        final String selectedDay = renderContext.getRequest().getParameter("ircday");
 
         // Only replace when we have a year, month and day
         if (selectedYear != null && selectedMonth != null && selectedDay != null && title!=null) {
@@ -65,9 +66,13 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
                     String newTitle = getTitle();
                     newTitle = newTitle.replace("##ORGTITLE##", beforeAfterEndTitle[0]);
                     if (dateFormatter != null) {
+
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd", renderContext.getMainResourceLocale());
+                        Date selectedDate = formatter.parse(selectedYear+"-"+selectedMonth+"-"+selectedDay);
+
                         // Create a date
                         Calendar logsDate = GregorianCalendar.getInstance();
-                        logsDate.set(Integer.valueOf(selectedYear), Integer.valueOf(selectedMonth), Integer.valueOf(selectedDay));
+                        logsDate.setTime(selectedDate);
 
                         // Replace IRCLOGDATE with a assembled date
                         newTitle = newTitle.replace("##IRCLOGDATE##", dateFormatter.format(logsDate.getTime()));
@@ -97,4 +102,5 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
     public void setDateFormat(String dateFormat) {
         this.dateFormatter = new SimpleDateFormat(dateFormat);
     }
+
 }

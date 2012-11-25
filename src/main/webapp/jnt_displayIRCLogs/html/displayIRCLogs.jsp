@@ -46,8 +46,8 @@
     RenderContext renderContext = (RenderContext) request.getAttribute("renderContext");
     String[] monthLocale = new String[12];
     List<String> fmonthLocale = new ArrayList<String>();
-    SimpleDateFormat sdf = new SimpleDateFormat("MMM", renderContext.getRequest().getLocale());
-    SimpleDateFormat fsdf = new SimpleDateFormat("MMMMM", renderContext.getRequest().getLocale());
+    SimpleDateFormat sdf = new SimpleDateFormat("MMM", renderContext.getMainResourceLocale());
+    SimpleDateFormat fsdf = new SimpleDateFormat("MMMMM", renderContext.getMainResourceLocale());
     for (int i=0; i<12;i++) {
         Calendar c=GregorianCalendar.getInstance();
         c.set(2012, i, 1);

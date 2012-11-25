@@ -25,6 +25,14 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+    <!-- Add's a ROBOT header to not index to the page -->
+    <bean class="org.jahia.modules.irclogs.filters.IRCLOGRobotsFilter">
+        <property name="priority" value="-4" />
+        <property name="applyOnModes" value="live"/>
+        <property name="applyOnConfigurations" value="page" />
+        <property name="applyOnMainResource" value="true"/>
+    </bean>
+
     <!-- Filter to replace the title of a page -->
     <bean name="CodeFilter" class="org.jahia.modules.irclogs.filters.IRCLogPageTitleFilter">
         <property name="priority" value="-4" />
