@@ -43,6 +43,7 @@
 <template:addResources type="css" resources="irclogs.css" />
 
 <%
+    // use attribute expiration
     RenderContext renderContext = (RenderContext) request.getAttribute("renderContext");
     String[] monthLocale = new String[12];
     List<String> fmonthLocale = new ArrayList<String>();
@@ -82,6 +83,13 @@
 
             logsDate=GregorianCalendar.getInstance();
             logsDate.set(selectedYear, selectedMonth, selectedDay);
+        }
+
+        // If we render a irc log of today, we refresh every 1 minute
+        // TODO: We should properly take into account at some point the server's time zone
+        Calendar c = new GregorianCalendar();
+        if (c.get(Calendar.YEAR) == selectedYear && c.get(Calendar.MONTH) == selectedMonth && c.get(Calendar.DAY_OF_MONTH) == selectedDay) {
+            request.setAttribute("expiration", 1);
         }
     }
 

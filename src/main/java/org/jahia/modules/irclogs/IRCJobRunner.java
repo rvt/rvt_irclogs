@@ -60,22 +60,21 @@ public class IRCJobRunner extends BackgroundJob {
                     @SuppressWarnings("unchecked")
                     public Integer[] doInJCR(JCRSessionWrapper session) throws RepositoryException {
 
-                        // Only run the jobs of the user channels within the website
-                        Query q = session.getWorkspace().getQueryManager().createQuery("select * from [jnt:displayIRCLogs]", Query.JCR_SQL2);
-                        NodeIterator ni = q.execute().getNodes();
-                        while (ni.hasNext()) {
-                            JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
-                            String channel = next.getProperty("channel").getString();
-                            // String directory = next.getProperty("directory").getString();
+                            Query q = session.getWorkspace().getQueryManager().createQuery("select * from [rvnt:displayIRCLogs]", Query.JCR_SQL2);
+                            NodeIterator ni = q.execute().getNodes();
+                            while (ni.hasNext()) {
+                                JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
+                                String channel = next.getProperty("channel").getString();
+                                // String directory = next.getProperty("directory").getString();
 
-                            ChatlogChannel clc=ChatLogCache.getInstance().getChannel(channel);
-                            if (clc!=null) {
-                                clc.runJob();
-                            } else {
-                                // We could create a new channel here... TODO??
+                                ChatlogChannel clc=ChatLogCache.getInstance().getChannel(channel);
+                                if (clc!=null) {
+                                    clc.runJob();
+                                } else {
+                                    // We could create a new channel here... TODO??
+                                }
                             }
-                        }
-                        return null;
+                            return null;
                     }
                 });
 

@@ -27,7 +27,7 @@
 
     <!-- Add's a ROBOT header to not index to the page -->
     <bean class="org.jahia.modules.irclogs.filters.IRCLOGRobotsFilter">
-        <property name="priority" value="-4" />
+        <property name="priority" value="17" />
         <property name="applyOnModes" value="live"/>
         <property name="applyOnConfigurations" value="page" />
         <property name="applyOnMainResource" value="true"/>
@@ -41,6 +41,8 @@
         <property name="applyOnMainResource" value="true"/>
         <property name="title" value="##ORGTITLE## of ##IRCLOGDATE##" />
         <property name="dateFormat" value="EEEEE d MMMMM yyyy" />
+        <property name="scriptEngineUtils" ref="scriptEngineUtils"/>
+        <property name="template" value="modules/rvt_irclogs/WEB-INF/scripts/pageTitle.groovy"/>
     </bean>
 
 
@@ -78,7 +80,7 @@
         <property name="trigger">
             <bean class="org.quartz.CronTrigger">
                 <property name="name" value="EggdroplogCronTrigger"/>
-<!--                <property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?"/> -->
+                <!--property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?"/ -->
                 <property name="cronExpression" value="0 0,30 * * * ?"/>
             </bean>
         </property>
