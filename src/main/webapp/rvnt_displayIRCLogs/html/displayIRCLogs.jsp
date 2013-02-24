@@ -89,7 +89,7 @@
         // TODO: We should properly take into account at some point the server's time zone
         Calendar c = new GregorianCalendar();
         if (c.get(Calendar.YEAR) == selectedYear && c.get(Calendar.MONTH) == selectedMonth && c.get(Calendar.DAY_OF_MONTH) == selectedDay) {
-            request.setAttribute("expiration", 1);
+            request.setAttribute("expiration", "1");
         }
     }
 

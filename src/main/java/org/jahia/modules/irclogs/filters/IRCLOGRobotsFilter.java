@@ -27,11 +27,6 @@ import org.jahia.services.render.Resource;
 import org.jahia.services.render.filter.AbstractFilter;
 import org.jahia.services.render.filter.RenderChain;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 /**
  * Filter that adds a robot's header to the page when year,month or day was selected
  * User: rvt
@@ -51,12 +46,9 @@ public class IRCLOGRobotsFilter extends AbstractFilter {
 
         // Only replace when we have eather a year, month and day but not when we have them all
         if ((selectedYear != null || selectedMonth != null) && selectedDay == null) {
-            previousOut=previousOut.replace("</head>", "<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX\">\n</head>");
+            previousOut=previousOut.replace("</head>", "<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX\" />\n</head>");
         }
 
         return previousOut;
     }
-
-
-
 }
