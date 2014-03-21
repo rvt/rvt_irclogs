@@ -49,15 +49,14 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
     private static final Logger logger = Logger.getLogger(ChatlogChannel.class);
     private String channel;
     private String directory;
-    private FilenameDateParser dateParser=null;
-    private static final Pattern linePattern = Pattern.compile("\\[(\\d\\d:\\d\\d)\\].<(.*?)>(.+)");
-
-
+    private final FilenameDateParser dateParser;
+    private final Pattern linePattern;
 
     private Map<Integer, Map<Integer, Map<Integer, File>>> mapOfAvailableDates;
 
     EggChatlogChannel() {
-        this.dateParser = new EgglogDateDDMMMYYYYParser();
+        dateParser = new EgglogDateDDMMMYYYYParser();
+        linePattern = dateParser.getLinepattern();
     }
 
     /**

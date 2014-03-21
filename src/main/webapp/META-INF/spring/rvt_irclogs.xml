@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ This file is part of the rvt_irclogs project, a Jahia module to display IRC logs
-  ~
-  ~ Copyright (C) 2010 R. van Twisk (rvt@dds.nl)
-  ~
-  ~ This file may be distributed and/or modified under the terms of the
-  ~ GNU General Public License version 2 as published by the Free Software
-  ~ Foundation and appearing in the file gpl-2.0.txt included in the
-  ~ packaging of this file.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-  ~
-  ~ This copyright notice MUST APPEAR in all copies of the script!
-  -->
+ ~ This file is part of the rvt_irclogs project, a Jahia module to display IRC logs
+ ~
+ ~ Copyright (C) 2010 R. van Twisk (rvt@dds.nl)
+ ~
+ ~ This file may be distributed and/or modified under the terms of the
+ ~ GNU General Public License version 2 as published by the Free Software
+ ~ Foundation and appearing in the file gpl-2.0.txt included in the
+ ~ packaging of this file.
+ ~
+ ~ This program is distributed in the hope that it will be useful,
+ ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ ~ GNU General Public License for more details.
+ ~
+ ~ You should have received a copy of the GNU General Public License
+ ~ along with this program; if not, write to the Free Software
+ ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ ~
+ ~ This copyright notice MUST APPEAR in all copies of the script!
+ -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -34,7 +34,7 @@
     </bean>
 
     <!-- Filter to replace the title of a page -->
-    <bean name="CodeFilter" class="org.jahia.modules.irclogs.filters.IRCLogPageTitleFilter">
+    <bean class="org.jahia.modules.irclogs.filters.IRCLogPageTitleFilter">
         <property name="priority" value="-4" />
         <property name="applyOnModes" value="live"/>
         <property name="applyOnConfigurations" value="page" />
@@ -44,31 +44,6 @@
         <property name="scriptEngineUtils" ref="scriptEngineUtils"/>
         <property name="template" value="modules/rvt_irclogs/WEB-INF/scripts/pageTitle.groovy"/>
     </bean>
-
-
-    <!-- LibreCAD Channel -->
-    <bean id="libreCADChannel" class="org.jahia.modules.irclogs.eggdrop.EggChatlogChannel">
-        <property name="channel" value="librecad" />
-        <property name="directory" value="/opt/egglogs"/>
-    </bean>
-
-    <!-- TYPO3 Channel -->
-    <bean id="tYPO3Channel" class="org.jahia.modules.irclogs.eggdrop.EggChatlogChannel">
-        <property name="channel" value="typo3" />
-        <property name="directory" value="/opt/egglogs"/>
-    </bean>
-
-    <!-- ChatLogCache -->
-    <bean id="chatLogCache" class="org.jahia.modules.irclogs.ChatLogCache">
-        <property name="channels">
-            <list>
-                <ref bean="libreCADChannel" />
-                <ref bean="tYPO3Channel" />
-            </list>
-        </property>
-    </bean>
-
-
 
     <!-- Ensure that we get executed at startup -->
     <bean class="org.jahia.modules.irclogs.schedules.ParseAtStartup">
@@ -90,16 +65,6 @@
                 <property name="group" value="ParseEggdropDirectory"/>
                 <property name="jobClass" value="org.jahia.modules.irclogs.IRCJobRunner"/>
                 <property name="description" value="Load's a directory list of all available logfiles."/>
-                <property name="jobDataAsMap">
-                    <map>
-                        <entry key="channels">
-                            <list>
-                                <value>librecad</value>
-                                <value>typo3</value>
-                            </list>
-                        </entry>
-                    </map>
-                </property>
             </bean>
         </property>
     </bean>

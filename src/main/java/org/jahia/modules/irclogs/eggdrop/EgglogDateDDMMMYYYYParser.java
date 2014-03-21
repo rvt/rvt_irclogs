@@ -22,12 +22,12 @@
 
 package org.jahia.modules.irclogs.eggdrop;
 
-import org.jahia.modules.irclogs.interfaces.FilenameDateParser;
-
 import java.io.File;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jahia.modules.irclogs.interfaces.FilenameDateParser;
 
 /**
  * Created with IntelliJ IDEA.
@@ -61,7 +61,8 @@ public class EgglogDateDDMMMYYYYParser implements FilenameDateParser {
         monthMap = Collections.unmodifiableMap(aMap);
     }
 
-    private static final Pattern pattern = Pattern.compile(".*.log.(\\d\\d)(\\w\\w\\w)(\\d\\d\\d\\d)");
+    private static final Pattern FILEPATTERN = Pattern.compile(".*.log.(\\d\\d)(\\w\\w\\w)(\\d\\d\\d\\d)");
+    private static final Pattern LINEPATTERN = Pattern.compile("\\[(\\d\\d:\\d\\d:?\\d?\\d?)\\].<(.*?)>(.+)");
 
     /**
      * Parses the filename and returns a date of which the logfiles was generated from
@@ -72,7 +73,7 @@ public class EgglogDateDDMMMYYYYParser implements FilenameDateParser {
      * @return
      */
     public Calendar getDate(File file) {
-        Matcher matcher = pattern.matcher(file.getName());
+        Matcher matcher = FILEPATTERN.matcher(file.getName());
 
         if (matcher.find()) {
 
@@ -87,5 +88,13 @@ public class EgglogDateDDMMMYYYYParser implements FilenameDateParser {
             return new GregorianCalendar(year, month, day);
         }
         return null;
+    }
+
+    public Pattern getFilepattern() {
+        return FILEPATTERN;
+    }
+
+    public Pattern getLinepattern() {
+        return LINEPATTERN;
     }
 }

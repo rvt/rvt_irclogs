@@ -24,6 +24,7 @@ package org.jahia.modules.irclogs.interfaces;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,4 +35,5 @@ import java.util.Calendar;
  */
 public interface FilenameDateParser {
     public Calendar getDate(File file);
+    public Pattern getLinepattern();
 }
