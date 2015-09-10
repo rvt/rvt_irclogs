@@ -85,9 +85,9 @@
     <name>Display IRCLogs</name>
     <description>These are the custom module (Jahia RVT IRCLogs) for running on a Jahia server.</description>
     <scm>
-        <connection>scm:git:git@github.com:Jahia/sitemap.git</connection>
-        <developerConnection>scm:git:git@github.com:Jahia/sitemap.git</developerConnection>
-        <url>scm:git:git@github.com:Jahia/sitemap.git</url>
+        <connection>scm:git:git@github.com:rvt/rvt_irclogs.git</connection>
+        <developerConnection>scm:git:git@github.com:rvt/rvt_irclogs.git</developerConnection>
+        <url>scm:git:git@github.com:rvt/rvt_irclogs.git</url>
         <tag>HEAD</tag>
     </scm>
     <repositories>
