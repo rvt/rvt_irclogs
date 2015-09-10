@@ -13,8 +13,7 @@ Each line entry within the log should look like this:
 [19:58] <ries> Example line as written by eggdrop
 
 
-Copy the file applicationcontext-rvt_irclogs.xml_ into tomcat/webapps/ROOT/WEB-INF/etc/spring
-remove the samples that are added and build your own.
+Edit the file rvt_irclogs.xml and configure it to your own needs.
 
 To add channel so they will be loaded into Jahia, create a bean that looks like this:
 

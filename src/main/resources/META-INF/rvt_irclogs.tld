@@ -35,7 +35,7 @@
     <function>
         <description>Converts a String value to a color to allow for colorizing user names</description>
         <name>strToColor</name>
-        <function-class>org.jahia.modules.irclogs.taglib.IRCLogsTag</function-class>
+        <function-class>nl.rvantwisk.jahia.irclogs.taglib.IRCLogsTag</function-class>
         <function-signature>
             java.lang.String strToColor(java.lang.String)
         </function-signature>
