@@ -43,8 +43,6 @@
         <property name="dateFormat" value="EEEEE d MMMMM yyyy" />
         <property name="scriptEngineUtils" ref="scriptEngineUtils"/>
         <property name="template" value="${rvt_irclogsTemplate:/modules/rvt_irclogs/WEB-INF/scripts/pageTitle.groovy}"/>
-
-
     </bean>
 
     <!-- Ensure that we get executed at startup -->
@@ -57,8 +55,8 @@
         <property name="trigger">
             <bean class="org.quartz.CronTrigger">
                 <property name="name" value="EggdroplogCronTrigger"/>
-                <property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?"/>
-                <!--property name="cronExpression" value="0 0,30 * * * ?"/-->
+                <!--property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?"/-->
+                <property name="cronExpression" value="0 0,30 * * * ?"/>
             </bean>
         </property>
         <property name="jobDetail">

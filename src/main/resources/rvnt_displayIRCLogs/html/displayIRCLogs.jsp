@@ -39,19 +39,19 @@
 <%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
 
 <template:addResources type="css" resources="irclogs.css" />
-
 <%
     // use attribute expiration
-    RenderContext renderContext = (RenderContext) request.getAttribute("renderContext");
-    String[] monthLocale = new String[12];
-    List<String> fmonthLocale = new ArrayList<String>();
-    SimpleDateFormat sdf = new SimpleDateFormat("MMM", renderContext.getMainResourceLocale());
-    SimpleDateFormat fsdf = new SimpleDateFormat("MMMMM", renderContext.getMainResourceLocale());
+    final RenderContext renderContext = (RenderContext) request.getAttribute("renderContext");
+    final String[] monthLocale = new String[12];
+    final List<String> fmonthLocale = new ArrayList<String>();
+    final String mainResourceLocale =  renderContext.getMainResource().getLocale().toString();
+    SimpleDateFormat monthDFormatter2 = new SimpleDateFormat("MMM", renderContext.getMainResourceLocale());
+    SimpleDateFormat monthDFormatter = new SimpleDateFormat("MMMMM", renderContext.getMainResourceLocale());
     for (int i=0; i<12;i++) {
-        Calendar c=GregorianCalendar.getInstance();
+        Calendar c = GregorianCalendar.getInstance();
         c.set(2012, i, 1);
-        monthLocale[i] = sdf.format(c.getTime());
-        fmonthLocale.add(fsdf.format(c.getTime()));
+        monthLocale[i] = WordUtils.capitalize(monthDFormatter2.format(c.getTime()));
+        fmonthLocale.add( WordUtils.capitalize(monthDFormatter.format(c.getTime())));
     }
     JCRNodeWrapper currentMNode = (JCRNodeWrapper) request.getAttribute("currentNode");
     String channel = currentMNode.getProperty("channel").getString();
@@ -108,7 +108,7 @@
 <c:set var="logsDate" value="<%=logsDate %>"/>
 
 
-
+<fmt:setLocale value="<%=mainResourceLocale %>" />
 <c:if test="${chatlogChannel == null}">
     <fmt:message key="irc_log_waiting_for_channel" />
 </c:if>
