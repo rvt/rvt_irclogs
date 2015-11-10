@@ -22,10 +22,10 @@
 
 package nl.rvantwisk.jahia.irclogs;
 
+import nl.rvantwisk.jahia.irclogs.interfaces.ChatlogChannel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jahia.api.Constants;
-import nl.rvantwisk.jahia.irclogs.interfaces.ChatlogChannel;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
@@ -60,21 +60,21 @@ public class IRCJobRunner extends BackgroundJob {
                     @SuppressWarnings("unchecked")
                     public Integer[] doInJCR(JCRSessionWrapper session) throws RepositoryException {
 
-                            Query q = session.getWorkspace().getQueryManager().createQuery("select * from [rvnt:displayIRCLogs]", Query.JCR_SQL2);
-                            NodeIterator ni = q.execute().getNodes();
-                            while (ni.hasNext()) {
-                                JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
-                                String channel = next.getProperty("channel").getString();
-                                // String directory = next.getProperty("directory").getString();
+                        Query q = session.getWorkspace().getQueryManager().createQuery("select * from [rvnt:displayIRCLogs]", Query.JCR_SQL2);
+                        NodeIterator ni = q.execute().getNodes();
+                        while (ni.hasNext()) {
+                            JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
+                            String channel = next.getProperty("channel").getString();
+                            // String directory = next.getProperty("directory").getString();
 
-                                ChatlogChannel clc=ChatLogCache.getInstance().getChannel(channel);
-                                if (clc!=null) {
-                                    clc.runJob();
-                                } else {
-                                    // We could create a new channel here... TODO??
-                                }
+                            ChatlogChannel clc = ChatLogCache.getInstance().getChannel(channel);
+                            if (clc != null) {
+                                clc.runJob();
+                            } else {
+                                // We could create a new channel here... TODO??
                             }
-                            return null;
+                        }
+                        return null;
                     }
                 });
 

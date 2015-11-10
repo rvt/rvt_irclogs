@@ -40,14 +40,10 @@
         <property name="applyOnConfigurations" value="page" />
         <property name="applyOnMainResource" value="true"/>
         <property name="title" value="##ORGTITLE## of ##IRCLOGDATE##" />
-        <property name="dateFormat" value="EEEEE d MMMMM yyyy" />
+        <property name="dateFormat" value="eeee d MMMM yyyy" />
+        <property name="localesToTry" value="en,nl" />
         <property name="scriptEngineUtils" ref="scriptEngineUtils"/>
         <property name="template" value="${rvt_irclogsTemplate:/modules/rvt_irclogs/WEB-INF/scripts/pageTitle.groovy}"/>
-    </bean>
-
-    <!-- Ensure that we get executed at startup -->
-    <bean class="nl.rvantwisk.jahia.irclogs.schedules.ParseAtStartup">
-        <property name="schedulerService" ref="SchedulerService"/>
     </bean>
 
     <bean parent="jobSchedulingBean">
@@ -56,7 +52,7 @@
             <bean class="org.quartz.CronTrigger">
                 <property name="name" value="EggdroplogCronTrigger"/>
                 <!--property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?"/-->
-                <property name="cronExpression" value="0 0,30 * * * ?"/>
+                <property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?"/>
             </bean>
         </property>
         <property name="jobDetail">
@@ -69,42 +65,49 @@
         </property>
     </bean>
 
-
+    <bean id="EgglogDateDDMMMYYYYParser" class="nl.rvantwisk.jahia.irclogs.eggdrop.EgglogDateDDMMMYYYYParser" />
 
     <!-- LibreCAD Channel -->
     <bean id="libreCADChannel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="librecad" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <!-- Jahia Channel -->
     <bean id="jahiaChannel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="jahia" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <!-- TYPO3 Channel -->
     <bean id="tYPO3Channel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="typo3" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <bean id="tYPO3NeosChannel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="typo3-neos" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <bean id="tYPO3cmsChannel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="typo3-cms" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <bean id="tYPO3FlowChannel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="typo3-flow" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>
 
     <bean id="flow3Channel" class="nl.rvantwisk.jahia.irclogs.eggdrop.EggChatlogChannel">
+        <constructor-arg ref="EgglogDateDDMMMYYYYParser"/>
         <property name="channel" value="flow3" />
         <property name="directory" value="/opt/egglogs"/>
     </bean>

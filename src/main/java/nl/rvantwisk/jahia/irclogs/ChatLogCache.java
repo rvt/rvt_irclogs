@@ -22,11 +22,12 @@
 
 package nl.rvantwisk.jahia.irclogs;
 
-import org.apache.log4j.Logger;
 import nl.rvantwisk.jahia.irclogs.interfaces.ChatlogChannel;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class that keeps a cache of a specific channel
@@ -37,7 +38,7 @@ import java.util.List;
  */
 public final class ChatLogCache {
     private static final Logger logger = Logger.getLogger(IRCJobRunner.class);
-    private List<ChatlogChannel> channels = new ArrayList<ChatlogChannel>();
+    private List<ChatlogChannel> channels = new ArrayList<>();
     private static ChatLogCache _instance;
 
     public ChatLogCache() {
@@ -49,13 +50,11 @@ public final class ChatLogCache {
     }
 
     public ChatlogChannel getChannel(final String channel) {
-        for (ChatlogChannel clc : getChannels()) {
-            if (clc.getChannel().equals(channel)) {
-                return clc;
-            }
+        final Optional<ChatlogChannel> clc = channels.stream().filter(p -> p.getChannel().equals(channel)).findFirst();
+        if (!clc.isPresent()) {
+            logger.warn("No such channel with name : " + channel);
         }
-        logger.warn("No such channel with name : " + channel);
-        return null;
+        return clc.get();
     }
 
     /**
@@ -63,8 +62,7 @@ public final class ChatLogCache {
      *
      * @return list of IRC channels
      */
-    public List<ChatlogChannel> getChannels()
-    {
+    public List<ChatlogChannel> getChannels() {
         return channels;
     }
 
@@ -73,9 +71,14 @@ public final class ChatLogCache {
      *
      * @param channels Adds a new channel
      */
-    public void setChannels(List<ChatlogChannel> channels)
-    {
+    public void setChannels(List<ChatlogChannel> channels) {
         this.channels = channels;
     }
 
+    @Override
+    public String toString() {
+        return "ChatLogCache{" +
+                "channels=" + channels +
+                '}';
+    }
 }

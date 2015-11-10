@@ -43,7 +43,12 @@
     color: #202020;
     font-size: 11px;
     padding: 0 10px 0 0;
-    margin: 0
+    margin: 0;
+    white-space: nowrap;
+}
+
+.irclogs .time .small{
+    font-size: 80%;
 }
 
 .irclogs .name {
@@ -53,6 +58,11 @@
     text-align: right;
     width: auto;
     margin: 0
+}
+
+.irclogs .removed {
+    color:#ff6060;
+    font-style: italic;
 }
 
 .irclogs .text {

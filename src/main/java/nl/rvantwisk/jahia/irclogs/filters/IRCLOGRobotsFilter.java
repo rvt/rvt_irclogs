@@ -46,7 +46,7 @@ public class IRCLOGRobotsFilter extends AbstractFilter {
 
         // Only replace when we have eather a year, month and day but not when we have them all
         if ((selectedYear != null || selectedMonth != null) && selectedDay == null) {
-            previousOut=previousOut.replace("</title>", "</title>\n<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX\" />");
+            previousOut = previousOut.replace("</title>", "</title>\n<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX\" />");
         }
 
         return previousOut;

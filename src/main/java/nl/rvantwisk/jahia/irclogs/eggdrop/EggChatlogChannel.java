@@ -22,21 +22,22 @@
 
 package nl.rvantwisk.jahia.irclogs.eggdrop;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import nl.rvantwisk.jahia.irclogs.IRClogLine;
+import nl.rvantwisk.jahia.irclogs.interfaces.ChannelDayInfo;
 import nl.rvantwisk.jahia.irclogs.interfaces.ChatlogChannel;
 import nl.rvantwisk.jahia.irclogs.interfaces.FilenameDateParser;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,10 +53,10 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
     private final FilenameDateParser dateParser;
     private final Pattern linePattern;
 
-    private Map<Integer, Map<Integer, Map<Integer, File>>> mapOfAvailableDates;
+    private Map<Integer, Map<Integer, Map<Integer, ChannelDayInfo>>> mapOfAvailableDates = new TreeMap<>();
 
-    EggChatlogChannel() {
-        dateParser = new EgglogDateDDMMMYYYYParser();
+    EggChatlogChannel(FilenameDateParser dateParser) {
+        this.dateParser = dateParser;
         linePattern = dateParser.getLinepattern();
     }
 
@@ -65,8 +66,7 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
      * @return
      */
     public List<Integer> getYears() {
-        List<Integer> years = new ArrayList<Integer>(mapOfAvailableDates.keySet());
-        Collections.sort(years);
+        List<Integer> years = new ArrayList<>(mapOfAvailableDates.keySet());
         return years;
     }
 
@@ -77,9 +77,8 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
      * @return
      */
     public List<Integer> getMonth(Integer year) {
-        if (mapOfAvailableDates.get(year)!=null) {
-            List<Integer> months = new ArrayList<Integer>(mapOfAvailableDates.get(year).keySet());
-            Collections.sort(months);
+        if (mapOfAvailableDates.get(year) != null) {
+            List<Integer> months = new ArrayList<>(mapOfAvailableDates.get(year).keySet());
             return months;
 
         } else {
@@ -94,127 +93,56 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
      * @param month
      * @return
      */
-    public List<Integer> getDays(Integer year, Integer month) {
-        if (getMonth(year).size()>0 && mapOfAvailableDates.get(year).get(month)!=null) {
-            List<Integer> days = new ArrayList<Integer>(mapOfAvailableDates.get(year).get(month).keySet());
-            Collections.sort(days);
-            return days;
+    public List<ChannelDayInfo> getDays(Integer year, Integer month) {
+        if (getMonth(year).size() > 0 && mapOfAvailableDates.get(year).get(month) != null) {
+            return new ArrayList<>(mapOfAvailableDates.get(year).get(month).values());
         } else {
             return Collections.emptyList();
         }
     }
 
-    public List<IRClogLine> getLines(Integer year, Integer month, Integer day) {
-        String[] lines = getLogData(year, month, day).split("\n");
-        List<IRClogLine> parsedLines = new ArrayList<IRClogLine>();
-
-        for (String line : lines) {
-            Matcher matcher = linePattern.matcher(line);
-
-            if (matcher.find()) {
-
-                // get a time object
-                String[] timeParsed = matcher.group(1).split(":");
-                Calendar timeOfLine = Calendar.getInstance();
-                timeOfLine.set(Calendar.YEAR, year);
-                timeOfLine.set(Calendar.MONTH, month);
-                timeOfLine.set(Calendar.DAY_OF_MONTH, day);
-                timeOfLine.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeParsed[0]));
-                timeOfLine.set(Calendar.MINUTE, Integer.parseInt(timeParsed[1]));
-
-                IRClogLine entry;
-                entry = new IRClogLine(
-                        timeOfLine,
-                        StringUtils.replaceEach(matcher.group(2), new String[]{"&", "\"", "<", ">", "#"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;", "&#35;"}),
-                        defaultLineReplacements(matcher.group(3)),
-                        false);
-
-
-                parsedLines.add(entry);
-            }
-        }
-        return parsedLines;
-    }
-
-    /**
-     * Return a day's worth of logging as a string
-     *
-     * @param year
-     * @param month
-     * @param day
-     * @return
-     */
-    private String getLogData(Integer year, Integer month, Integer day) {
-
-        File file = mapOfAvailableDates.get(year).get(month).get(day);
-        try {
-            return FileUtils.readFileToString(file, "ISO-8859-1");
-        } catch (IOException e) {
-            logger.error("File " + file.getName() + " couldn't get opened!");
-        }
-        return "";
+    @Override
+    public List<IRClogLine> getLines(Integer year, Integer month, Integer day) throws IOException {
+        ChannelDayInfo foo = mapOfAvailableDates.get(year).get(month).get(day);
+        return foo.getLines();
     }
 
     public void runJob() {
         long startTime = System.currentTimeMillis();
-        WildcardFileFilter fileFilter = new WildcardFileFilter(channel + ".log.*");
-        File fDirectory = new File(directory);
-        Collection<File> files = FileUtils.listFiles(fDirectory, fileFilter, TrueFileFilter.INSTANCE);
-        buildAvailabilityMap(files);
-        long endTime = System.currentTimeMillis();
-        logger.info("Processed channel " + channel + " with " + files.size() + " files. Done in " + (endTime - startTime) + " ms.");
-    }
+        final Path fDirectory = Paths.get(directory);
 
-    /**
-     * Builds a year/month/day availability map for this channel
-     */
-    private void buildAvailabilityMap(Collection<File> files) {
-        mapOfAvailableDates = new HashMap<Integer, Map<Integer, Map<Integer, File>>>();
-        for (File file : files) {
-            Calendar filesDates = dateParser.getDate(file);
-
-            if (filesDates != null) {
-                // Fetches Year
-                Map<Integer, Map<Integer, File>> monthData = mapOfAvailableDates.get(filesDates.get(Calendar.YEAR));
-                if (monthData == null) {
-                    monthData = new HashMap<Integer, Map<Integer, File>>();
-                    mapOfAvailableDates.put(filesDates.get(Calendar.YEAR), monthData);
-                }
-
-                // Fetches months
-                Map<Integer, File> dayData = monthData.get(filesDates.get(Calendar.MONTH));
-                if (dayData == null) {
-                    dayData = new HashMap<Integer, File>();
-                    monthData.put(filesDates.get(Calendar.MONTH), dayData);
-                }
-
-                dayData.put(filesDates.get(Calendar.DAY_OF_MONTH), file);
+        final List<Path> allPaths = new ArrayList<>(100);
+        if (Files.isDirectory(fDirectory)) {
+            // Optionally we could use walk??
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(fDirectory, channel + ".log.*")) {
+                stream
+                        .forEach(file -> {
+                            allPaths.add(file);
+                        });
+            } catch (IOException e) {
+                logger.warn("Failed to get DirectoryStream + ", e);
             }
         }
+
+        final Function<EggdropChannelDayInfo, Integer> getDay = p -> p.getDate().getDayOfMonth();
+        final Function<EggdropChannelDayInfo, Integer> getMonth = p -> p.getDate().getMonth().getValue();
+        final Function<EggdropChannelDayInfo, Integer> getYear = p -> p.getDate().getYear();
+
+        mapOfAvailableDates = allPaths.stream()
+                .parallel()
+                .map(path -> new EggdropChannelDayInfo(path, dateParser.getDate(path.toString()), this))
+                .collect(Collectors.groupingByConcurrent(getYear,
+                        Collectors.groupingBy(getMonth,
+                                Collectors.toMap(getDay, Function.identity()))));
+
+        long endTime = System.currentTimeMillis();
+        logger.info("Processed channel " + channel + " with " + allPaths.size() + " files. Done in " + (endTime - startTime) + " ms.");
     }
 
-    /**
-     * This function replaces links and make the output html 'save'
-     *
-     * TODO: Make this more universal, possibly in a top level class somehow, or as a taglib?
-     *
-     * @param line
-     * @return
-     */
-    private String defaultLineReplacements(String line) {
-        final Pattern userPattern = Pattern.compile("Users/\\S+/?\\S*", Pattern.CASE_INSENSITIVE);
-        final Pattern homePattern = Pattern.compile("Home/\\S+/?\\S*", Pattern.CASE_INSENSITIVE);
-        final Pattern emailPattern = Pattern.compile("([_A-Za-z0-9-]+)(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})", Pattern.CASE_INSENSITIVE);
-        final Pattern urlPattern = Pattern.compile("(\\A|\\s)((http|https|ftp):\\S+)(\\s|\\z)", Pattern.CASE_INSENSITIVE);
-
-        line = userPattern.matcher(line).replaceAll("Users/<removed>/...");
-        line = homePattern.matcher(line).replaceAll("Home/<removed>/...");
-        line = emailPattern.matcher(line).replaceAll("(obscured mail address)");
-
-        line = StringUtils.replaceEach(line, new String[]{"&", "\"", "<", ">", "#"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;", "&#35;"});
-
-        line = urlPattern.matcher(line).replaceAll("$1<a target=\"_blank\" href=\"$2\">$2</a>$4");
-        return line;
+    @Override
+    public int getMaxDay(Integer year, Integer month) {
+        final OptionalInt max = mapOfAvailableDates.get(year).get(month).values().stream().mapToInt(p -> p.getNumLines()).max();
+        return max.isPresent() ? max.getAsInt() : 0;
     }
 
     public String getChannel() {
@@ -235,5 +163,17 @@ public class EggChatlogChannel implements ChatlogChannel, InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         runJob();
+    }
+
+    public Pattern getLinePattern() {
+        return linePattern;
+    }
+
+    @Override
+    public String toString() {
+        return "EggChatlogChannel{" +
+                "channel='" + channel + '\'' +
+                ", directory='" + directory + '\'' +
+                '}';
     }
 }

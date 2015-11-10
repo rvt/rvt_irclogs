@@ -40,4 +40,32 @@
             java.lang.String strToColor(java.lang.String)
         </function-signature>
     </function>
+
+    <function>
+        <description>Formats a ZonedDateTime</description>
+        <name>zonedDateTimeFormatter</name>
+        <function-class>nl.rvantwisk.jahia.irclogs.taglib.IRCLogsTag</function-class>
+        <function-signature>
+            java.lang.String zonedDateTimeFormatter(java.time.ZonedDateTime, java.lang.String)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>Formats a line</description>
+        <name>formatLine</name>
+        <function-class>nl.rvantwisk.jahia.irclogs.taglib.IRCLogsTag</function-class>
+        <function-signature>
+            java.lang.String formatLine(java.lang.String)
+        </function-signature>
+    </function>
+
+    <function>
+        <description>Get the month int from a name</description>
+        <name>findMonth</name>
+        <function-class>nl.rvantwisk.jahia.irclogs.taglib.IRCLogsTag</function-class>
+        <function-signature>
+            java.lang.Integer findMonth(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
 </taglib>

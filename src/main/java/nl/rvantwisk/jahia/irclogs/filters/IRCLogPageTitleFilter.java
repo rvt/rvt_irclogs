@@ -30,6 +30,7 @@ import org.jahia.services.render.filter.AbstractFilter;
 import org.jahia.services.render.filter.RenderChain;
 import org.jahia.services.render.filter.cache.AggregateCacheFilter;
 import org.jahia.services.templates.JahiaTemplateManagerService;
+import org.jahia.services.usermanager.JahiaUserManagerService;
 import org.jahia.utils.ScriptEngineUtils;
 import org.jahia.utils.WebUtils;
 import org.slf4j.Logger;
@@ -44,15 +45,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
  * Filter the generate a new title for a specific log entry of a IRC logfile
- *
+ * <p>
  * User: rvt
  * Date: 11/18/12
  * Time: 6:08 PM
@@ -62,55 +60,15 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
     private static Logger logger = LoggerFactory.getLogger(IRCLogPageTitleFilter.class);
 
     private String title = null;
-    private SimpleDateFormat dateFormatter = null;
+    private DateTimeFormatter dateFormatter = null;
     private String template;
     private ScriptEngineUtils scriptEngineUtils;
     private String resolvedTemplate;
-
-
-    public String execute_2(String previousOut, RenderContext renderContext, Resource resource, RenderChain chain) throws Exception {
-
-        final String selectedYear = renderContext.getRequest().getParameter("ircyear");
-        final String selectedMonth = renderContext.getRequest().getParameter("ircmonth");
-        final String selectedDay = renderContext.getRequest().getParameter("ircday");
-
-        // Only replace when we have a year, month and day
-        if (selectedYear != null && selectedMonth != null && selectedDay != null && title!=null) {
-
-            // Split title so we can get and replace it
-            final String[] beforeAfterTitle = previousOut.split("<title>");
-            if (beforeAfterTitle.length==2) {
-
-                final String[] beforeAfterEndTitle = beforeAfterTitle[1].split("</title>");
-                if (beforeAfterEndTitle.length == 2) {
-
-                    // create a new title
-                    String newTitle = getTitle();
-                    newTitle = newTitle.replace("##ORGTITLE##", beforeAfterEndTitle[0]);
-                    if (dateFormatter != null) {
-
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd", renderContext.getMainResourceLocale());
-                        Date selectedDate = formatter.parse(selectedYear+"-"+selectedMonth+"-"+selectedDay);
-
-                        // Create a date
-                        Calendar logsDate = GregorianCalendar.getInstance();
-                        logsDate.setTime(selectedDate);
-
-                        // Replace IRCLOGDATE with a assembled date
-                        newTitle = newTitle.replace("##IRCLOGDATE##", dateFormatter.format(logsDate.getTime()));
-                    }
-
-                    // assemble new title
-                    previousOut = beforeAfterTitle[0] + "<title>" + newTitle + "</title>" + beforeAfterEndTitle[1];
-                }
-            }
-        }
-
-        return previousOut;
-    }
+    private String localesToTry;
 
     @Override
     public String execute(String previousOut, RenderContext renderContext, Resource resource, RenderChain chain) throws Exception {
+        JahiaUserManagerService f;
         String out = previousOut;
         String script = getResolvedTemplate();
         if (script != null) {
@@ -132,8 +90,9 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
 
                 // Parameters needed for title replacing
                 bindings.put("orgTitle", outputDocument.toString().substring(bodyStartTag.getEnd(), bodyEndTag.getBegin()));
-                bindings.put("dateFormatter", dateFormatter);
+                bindings.put("dateFormatter", dateFormatter.withLocale(renderContext.getMainResourceLocale()));
                 bindings.put("title", getTitle());
+                bindings.put("localesToTry", getLocalesToTry());
                 bindings.put("renderContext", renderContext);
 
 
@@ -141,8 +100,8 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
                 StringWriter writer = (StringWriter) scriptContext.getWriter();
                 final String irclogsScript = writer.toString();
                 if (StringUtils.isNotBlank(irclogsScript)) {
-                    outputDocument.replace(bodyStartTag.getEnd(), bodyEndTag.getBegin()+1,
-                            AggregateCacheFilter.removeEsiTags(irclogsScript) +"<");
+                    outputDocument.replace(bodyStartTag.getEnd(), bodyEndTag.getBegin() + 1,
+                            AggregateCacheFilter.removeEsiTags(irclogsScript) + "<");
                 }
                 break; // avoid to loop if for any reasons multiple body in the page
             }
@@ -161,11 +120,11 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
     }
 
     public String getDateFormat() {
-        return dateFormatter.toPattern();
+        return dateFormatter.toString();
     }
 
     public void setDateFormat(String dateFormat) {
-        this.dateFormatter = new SimpleDateFormat(dateFormat);
+        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
     }
 
     public void setTemplate(String template) {
@@ -190,6 +149,14 @@ public class IRCLogPageTitleFilter extends AbstractFilter {
 
     public void setScriptEngineUtils(ScriptEngineUtils scriptEngineUtils) {
         this.scriptEngineUtils = scriptEngineUtils;
+    }
+
+    public void setLocalesToTry(String localesToTry) {
+        this.localesToTry = localesToTry;
+    }
+
+    public String getLocalesToTry() {
+        return localesToTry;
     }
 
     class irclogsScriptContext extends SimpleScriptContext {

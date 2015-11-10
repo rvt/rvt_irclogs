@@ -22,8 +22,7 @@
 
 package nl.rvantwisk.jahia.irclogs.interfaces;
 
-import java.io.File;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 /**
@@ -34,6 +33,7 @@ import java.util.regex.Pattern;
  * To change this template use File | Settings | File Templates.
  */
 public interface FilenameDateParser {
-    public Calendar getDate(File file);
-    public Pattern getLinepattern();
+    LocalDate getDate(String fileName);
+
+    Pattern getLinepattern();
 }

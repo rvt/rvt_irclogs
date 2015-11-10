@@ -24,6 +24,7 @@ package nl.rvantwisk.jahia.irclogs.interfaces;
 
 import nl.rvantwisk.jahia.irclogs.IRClogLine;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -35,17 +36,27 @@ import java.util.List;
  */
 public interface ChatlogChannel {
 
+
     /**
-     * Returns the name of this channel
+     * Get the day with the most log entries
+     *
      * @return
      */
-    public String getChannel();
+    int getMaxDay(Integer year, Integer month);
+
+    /**
+     * Returns the name of this channel
+     *
+     * @return
+     */
+    String getChannel();
 
     /**
      * Returns the number of years within this channel
+     *
      * @return
      */
-    public List<Integer> getYears();
+    List<Integer> getYears();
 
     /**
      * Returns the number of months within this year
@@ -53,7 +64,7 @@ public interface ChatlogChannel {
      * @param year
      * @return
      */
-    public List<Integer> getMonth(Integer year);
+    List<Integer> getMonth(Integer year);
 
     /**
      * Return a list of Day's within this channel
@@ -62,16 +73,17 @@ public interface ChatlogChannel {
      * @param month
      * @return
      */
-    List<Integer> getDays(Integer year, Integer month);
+    List<ChannelDayInfo> getDays(Integer year, Integer month);
 
     /**
      * returns a list of IRCLoglines for this date
+     *
      * @param year
      * @param month
      * @param day
      * @return
      */
-    List<IRClogLine> getLines(Integer year, Integer month, Integer day);
+    List<IRClogLine> getLines(Integer year, Integer month, Integer day) throws IOException;
 
     /**
      * job that will be execute that allows the channel to fecch/cache or do whatever that's needed

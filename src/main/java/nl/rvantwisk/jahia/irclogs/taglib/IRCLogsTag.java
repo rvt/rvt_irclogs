@@ -22,26 +22,23 @@
 
 package nl.rvantwisk.jahia.irclogs.taglib;
 
-import java.util.HashMap;
-import java.util.Map;
+import nl.rvantwisk.jahia.irclogs.IRClogLine;
+import org.apache.commons.lang.StringUtils;
+
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Small tag library for IRC log rendering
  */
 public class IRCLogsTag {
-    private static final int COLOR_TABLE_SIZE = 26;
-    private static final int END_COLOR = 0xc0c0c0;
-    private static final Map<Integer, String> colorTable;
-
-    static {
-        colorTable = new HashMap<Integer, String>();
-        int colorStep = END_COLOR / COLOR_TABLE_SIZE;
-        int i;
-        for (i = 0; i < COLOR_TABLE_SIZE; i++) {
-            String color = String.format("#%x", (colorStep * i) & 0xFFFFFF);
-            colorTable.put(i, color);
-        }
-    }
+    private static final Pattern userPattern = Pattern.compile("/?Users?/\\S+/?\\S*", Pattern.CASE_INSENSITIVE);
+    private static final Pattern homePattern = Pattern.compile("/?Home/\\S+/?\\S", Pattern.CASE_INSENSITIVE);
+    private static final Pattern emailPattern = Pattern.compile("([_A-Za-z0-9-]+)(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})", Pattern.CASE_INSENSITIVE);
+    private static final Pattern urlPattern = Pattern.compile("(\\A|\\s)((http|https|ftp):\\S+)(\\s|\\z)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Converts a string to a specific color, usefull for rendering names in different colors
@@ -50,19 +47,60 @@ public class IRCLogsTag {
      * @return
      */
     public static String strToColor(final String value) {
-        int entry;
-        if (value.length() > 2) {
-            entry = ((int) value.charAt(0) + (int) value.charAt(1) + (int) value.charAt(2)) % COLOR_TABLE_SIZE;
-        } else if (value.length() == 2) {
-            entry = ((int) value.charAt(0) + (int) value.charAt(1)) % COLOR_TABLE_SIZE;
-        } else if (value.length() == 1) {
-            entry = ((int) value.charAt(0)) % COLOR_TABLE_SIZE;
-        } else {
-            entry = 0;
-        }
-
-        return colorTable.get(entry);
+        return IRClogLine.strToColor(value);
     }
 
+    /**
+     * Format a ZonedDateTime to a string
+     *
+     * @param zdt
+     * @param pattern
+     * @return
+     */
+    public static String zonedDateTimeFormatter(final ZonedDateTime zdt, final String pattern) {
+        return DateTimeFormatter.ofPattern(pattern).format(zdt);
+    }
 
+    /**
+     * Format a line
+     *
+     * @param line
+     * @return
+     */
+    public static String formatLine(String line) {
+        line = StringUtils.replaceEach(line, new String[]{"&", "\"", "<", ">", "#"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;", "&#35;"});
+        line = userPattern.matcher(line).replaceAll("<span class=\"removed\">/Users/&lt;removed&gt;/...</span>");
+        line = homePattern.matcher(line).replaceAll("<span class=\"removed\">/Home/&lt;removed&gt;/...</span>");
+        line = emailPattern.matcher(line).replaceAll("<span class=\"removed\">(obscured mail address)</span>");
+        line = urlPattern.matcher(line).replaceAll("$1<a target=\"_blank\" href=\"$2\">$2</a>$4");
+        return line;
+    }
+
+    /**
+     * find's the month number based on teh font's name, and searches within the locales
+     * This is usefull when youa re on a page and switch locale, then we can still lookup
+     * The data
+     *
+     * @param month
+     * @param localedToTry
+     * @return
+     */
+    public static Integer findMonth(String month, String localedToTry) {
+        if (month == null) {
+            return 0;
+        }
+        month = month.toLowerCase();
+        for (int i = 1; i < 13; i++) {
+            for (String sLocale : localedToTry.split(",")) {
+                final Locale locale = new Locale(sLocale);
+                final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM").withLocale(locale);
+                if (formatter.format(LocalDate.of(2000, i, 1)).toLowerCase().equals(month)) {
+                    return i;
+                }
+                ;
+            }
+        }
+
+        return 0;
+    }
 }

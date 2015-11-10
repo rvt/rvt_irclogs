@@ -24,69 +24,65 @@ package nl.rvantwisk.jahia.irclogs.eggdrop;
 
 import nl.rvantwisk.jahia.irclogs.interfaces.FilenameDateParser;
 
-import java.io.File;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created with IntelliJ IDEA.
- * <p/>
+ * <p>
  * Parses a filename of a egglog file and returns a date object of the date of the chatlog
- * <p/>
+ * <p>
  * User: rvt
  * Date: 11/17/12
  * Time: 7:45 AM
  * To change this template use File | Settings | File Templates.
  */
 public class EgglogDateDDMMMYYYYParser implements FilenameDateParser {
-    private static final Map<String, Integer> monthMap;
-
-    static {
-        // we migth get feedback of users using a different filename for there filenames,
-        // we can then decide what to do...
-        Map<String, Integer> aMap = new HashMap<String, Integer>();
-        aMap.put("Jan", 0);
-        aMap.put("Feb", 1);
-        aMap.put("Mar", 2);
-        aMap.put("Apr", 3);
-        aMap.put("May", 4);
-        aMap.put("Jun", 5);
-        aMap.put("Jul", 6);
-        aMap.put("Aug", 7);
-        aMap.put("Sep", 8);
-        aMap.put("Oct", 9);
-        aMap.put("Nov", 10);
-        aMap.put("Dec", 11);
-        monthMap = Collections.unmodifiableMap(aMap);
-    }
+    private static final List<String> monthMap = new ArrayList<>();
 
     private static final Pattern FILEPATTERN = Pattern.compile(".*.log.(\\d\\d)(\\w\\w\\w)(\\d\\d\\d\\d)");
     private static final Pattern LINEPATTERN = Pattern.compile("\\[(\\d\\d:\\d\\d:?\\d?\\d?)\\].<(.*?)>(.+)");
+    private static final String DEFAULTLOCALE = "en";
+
+    public EgglogDateDDMMMYYYYParser() {
+        this(DEFAULTLOCALE);
+    }
+
+    public EgglogDateDDMMMYYYYParser(String locale) {
+        final DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM").withLocale(Locale.forLanguageTag(locale));
+        monthMap.addAll(IntStream.range(1, 13)
+                .mapToObj(i -> monthFormatter.format(LocalDate.of(2000, i, 1))).
+                        collect(Collectors.toList()));
+    }
 
     /**
      * Parses the filename and returns a date of which the logfiles was generated from
-     * <p/>
+     * <p>
      * Returns null if the filename wasn't parsable
      *
      * @param file
      * @return
      */
-    public Calendar getDate(File file) {
-        Matcher matcher = FILEPATTERN.matcher(file.getName());
+    public LocalDate getDate(String file) {
+        Matcher matcher = FILEPATTERN.matcher(file);
 
         if (matcher.find()) {
-
-            if (!monthMap.containsKey(matcher.group(2))) {
+            if (!monthMap.contains(matcher.group(2))) {
                 return null;
             }
-
-            Integer day = Integer.valueOf(matcher.group(1));
-            Integer year = Integer.valueOf(matcher.group(3));
-            Integer month = monthMap.get(matcher.group(2));
-
-            return new GregorianCalendar(year, month, day);
+            int day = Integer.parseInt(matcher.group(1));
+            int year = Integer.parseInt(matcher.group(3));
+            int month = monthMap.indexOf(matcher.group(2));
+            return LocalDate.of(year, month + 1, day);
         }
+        assert true : "Given file must exist";
         return null;
     }
 
